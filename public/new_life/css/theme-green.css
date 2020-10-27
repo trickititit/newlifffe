@@ -1,0 +1,146 @@
+
+.modern-forms .mdn-bar:before, 
+.modern-forms .mdn-bar:after { background:#4CAF50; }
+
+.modern-forms .mdn-input:focus + .mdn-label,
+.modern-forms .mdn-textarea:focus + .mdn-label,
+.modern-forms .mdn-select > select:focus + .mdn-label,
+.modern-forms .mdn-select-multiple select:focus + .mdn-label,
+.modern-forms .mdn-upload .mdn-file:focus ~ .mdn-label{ color:#4CAF50; }
+
+/* checkbox radio 
+--------------------------------------------------- */
+.modern-forms input + .mdn-radio:before,
+.modern-forms input:checked + .mdn-checkbox,
+.modern-forms input:focus + .mdn-radio:before{  background: #4CAF50; }
+
+/* @radio and checkbox checked | hover | focus
+------------------------------------------------------ */
+.modern-forms input:hover + .mdn-radio, 
+.modern-forms input:focus + .mdn-radio,
+.modern-forms input:hover + .mdn-checkbox,
+.modern-forms input:focus + .mdn-checkbox,
+.modern-forms input:checked + .mdn-radio,
+.modern-forms input:checked + .mdn-checkbox{
+    border-color: #4CAF50;
+}
+
+.modern-forms input:focus + .mdn-checkbox:before{ border-color: #fff; }
+.modern-forms .option-tick .mdn-checkbox:before,
+.modern-forms .option-tick input:checked + .mdn-checkbox:before{ border-color:#4CAF50; }
+
+.modern-forms input:checked + .mdn-radio:active:after, 
+.modern-forms input:checked + .mdn-checkbox:active:after,
+.modern-forms input:checked + .mdn-option:active .mdn-radio:after,
+.modern-forms input:checked + .mdn-option:active .mdn-checkbox:after{
+	-webkit-box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 24px rgba(76,175,80,0.2);
+	-moz-box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 24px rgba(76,175,80,0.2); 
+	-o-box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 24px rgba(76,175,80,0.2); 
+	box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 24px rgba(76,175,80,0.2);
+}
+
+
+.modern-forms input:disabled + .mdn-radio,
+.modern-forms input:disabled + .mdn-checkbox,
+.modern-forms .option-tick input:checked:disabled + .mdn-checkbox:before{ border-color: #D5D5D5; }
+.modern-forms input:checked:disabled + .mdn-checkbox,
+.modern-forms input:checked:disabled + .mdn-radio:before{ background: #D5D5D5; }
+.modern-forms input:disabled + .mdn-radio + .option-label,
+.modern-forms input:disabled + .mdn-checkbox + .option-label { color: #D5D5D5; }
+.modern-forms .option-tick input:checked:disabled + .mdn-checkbox{ background: none; border:0; }
+
+
+/* Toggle Switch 
+----------------------------------------------------------------- */
+.modern-forms .mdn-switch input:checked + .switch-toggle { background:#A5D6A7; }
+.modern-forms .mdn-switch input:checked + .switch-toggle::before { left: 20px; background: #4CAF50; }
+.modern-forms .mdn-switch input:disabled + .switch-toggle { background: #d5d5d5; pointer-events: none; }
+.modern-forms .mdn-switch input:disabled + .switch-toggle::before { background: #bcbdbc; }
+.modern-forms .mdn-switch input:disabled + .switch-toggle + .switch-label { color:#D5D5D5; }
+
+/*.modern-forms .modern-switch input:checked + .switch-toggle { background: #009688;  }*/
+.modern-forms .modern-switch input:checked + .switch-toggle::before { left: 17px; background: #fff; }
+.modern-forms .modern-switch input:disabled + .switch-toggle::before { background: #f5f5f5; }
+
+
+/* switch ripple 
+------------------------------------------------------- */
+.modern-forms .mdn-switch:active input:checked + .switch-toggle::before,
+.modern-forms .mdn-switch input:checked + .switch-toggle:active::before { 
+	-webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(76,175,80,0.2);
+	-moz-box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(76,175,80,0.2);
+	-o-box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(76,175,80,0.2);
+	box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(76,175,80,0.2); 
+}
+
+
+/* @flat button 
+------------------------------------------------ */
+.modern-forms .btn-flat{ color:#4CAF50; }
+.modern-forms .btn-flat:hover,
+.modern-forms .btn-flat:active { 
+	color:#38833D;
+	background:#EBEBEB;  
+}
+
+/* @flat button disabled 
+------------------------------------------------ */
+.modern-forms .btn-flat[disabled],
+.modern-forms .btn-flat[disabled]:hover,
+.modern-forms .btn-flat[disabled]:active,
+.modern-forms .mdn-upload .mdn-file[disabled] ~ .btn-flat,
+.modern-forms .mdn-upload .mdn-file[disabled]:hover ~ .btn-flat { 
+	color:#A5D6A7;
+	background: none;  
+}
+
+/* @primary button 
+------------------------------------------------ */
+.modern-forms .btn-primary { 
+	color: #fff;  
+	background-color:#4CAF50;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.modern-forms .btn-primary:hover,
+.modern-forms .btn-primary:focus,
+.modern-forms .btn-primary:active,
+.modern-forms .mdn-upload .mdn-file:hover ~ .btn-primary{
+	background-color:#38833D;
+	color:#fff; 
+}
+
+/* @ primary button disabled
+---------------------------------------------------------------- */
+.modern-forms .btn-primary[disabled],
+.modern-forms .btn-primary[disabled]:hover,
+.modern-forms .btn-primary[disabled]:focus,
+.modern-forms .btn-primary[disabled]:active,
+.modern-forms .mdn-upload .mdn-file[disabled] ~ .btn-primary,
+.modern-forms .mdn-upload .mdn-file[disabled]:hover ~ .btn-primary{
+	background-color:#A5D6A7;
+	color:#fff; 
+}
+
+
+.modern-forms .mdn-input:focus ~ .mdn-msg,
+.modern-forms .mdn-textarea:focus ~ .mdn-msg,
+.modern-forms .mdn-select > select:focus ~ .mdn-msg,
+.modern-forms .mdn-upload .mdn-file:focus ~ .mdn-msg{ color:#4CAF50; }
+
+/* @rating widget
+-------------------------------------------------------------------- */
+.modern-forms .mdn-rating:hover .star-l:hover,
+.modern-forms .mdn-rating:hover .star-l:hover ~ .star-l,
+.modern-forms .star-i:checked ~ .star-l { color:#4CAF50;	}
+.modern-forms .star-l, 
+.modern-forms .mdn-rating:hover .star-l {	
+	color: #BBBBBB;	
+}
+
+/* Icons
+----------------------------------------------------------------------*/
+.modern-forms .mdn-input:focus ~ .mdn-icon i,
+.modern-forms .mdn-textarea:focus ~ .mdn-icon i,
+.modern-forms .mdn-select > select:focus ~ .mdn-icon i,
+.modern-forms .mdn-upload .mdn-file:focus ~ .mdn-icon i{ color:#4CAF50; }

@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^xn--90aidipcie7k4a.xn--p1ai$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.xn--90aidipcie7k4a.xn--p1ai$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]

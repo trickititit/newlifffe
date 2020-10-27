@@ -1,0 +1,35 @@
+.round-a-normal{
+
+  background: #fff;
+  color:#3F3F3F;
+  text-align:center;
+  border: 1px solid #e5e5e5;
+  min-height: 250px;
+  margin-top: 20px;
+  word-wrap: break-word;
+}
+.round-a-normal div{
+  padding:4px;
+}
+
+.round-title{
+  text-align: left;
+  font-size: 20px;
+  margin-top: 10px;
+}
+.round-date{
+  margin-top: 10px;
+  text-align: right;
+}
+
+.round-content {
+  margin-top: 15px;
+  text-align: left;
+}
+
+.block-a {
+  padding-right: 30px!important;
+  padding-bottom: 10px!important;
+  position: absolute;
+  bottom: 0;
+}
