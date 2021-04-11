@@ -8,33 +8,36 @@
 
 namespace App\Repositories;
 
-use App\Post;
 use Photo;
+use App\Post;
 
 class PostsRepository extends Repository
 {
 
-    public function __construct(Post $post) {
+    public function __construct(Post $post)
+    {
         $this->model = $post;
     }
 
-    public function one($alias,$attr = array()) {
-        $article = parent::one($alias,$attr);
+    public function one($alias, $attr = array())
+    {
+        $article = parent::one($alias, $attr);
 //        if($article && !empty($attr)) {
 //            $article->load('comments');
 //            $article->comments->load('user');//        }
         return $article;
     }
 
-    public function addPost($request) {
+    public function addPost($request)
+    {
 //		if (\Gate::denies('create',$this->model)) {
 ////            abort(403);
 //        }
         $data = $request->all();
-        if(empty($data['alias'])) {
+        if (empty($data['alias'])) {
             $data['alias'] = $this->transliterate($data['title']);
         }
-        if($this->one($data['alias'],FALSE)) {
+        if ($this->one($data['alias'], false)) {
             $request->merge(array('alias' => $data['alias']));
             $request->flash();
 
@@ -55,18 +58,19 @@ class PostsRepository extends Repository
 
     }
 
-    public function editPost($request, $post) {
+    public function editPost($request, $post)
+    {
 //		if (\Gate::denies('create',$this->model)) {
 ////            abort(403);
 //        }
         $data = $request->all();
-        if(empty($data['alias'])) {
+        if (empty($data['alias'])) {
             $data['alias'] = $this->transliterate($data['title']);
         }
 
-        $result = $this->one($data['alias'],FALSE);
+        $result = $this->one($data['alias'], false);
 
-        if(isset($result->id) && ($result->id != $post->id)) {
+        if (isset($result->id) && ($result->id != $post->id)) {
             $request->merge(array('alias' => $data['alias']));
             $request->flash();
 
@@ -87,15 +91,17 @@ class PostsRepository extends Repository
 
     }
 
-    public function deletePost($post) {
-        if($post->delete()) {
+    public function deletePost($post)
+    {
+        if ($post->delete()) {
             return ['status' => 'Статья удалена'];
         } else {
             return ["error" => "Ошибка удаления статьи"];
         }
     }
 
-    private function uploadImage($request) {
+    private function uploadImage($request)
+    {
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             if ($image->isValid()) {
@@ -105,29 +111,33 @@ class PostsRepository extends Repository
                 }
                 $img = Photo::make($image);
                 $img_type = $this->getTypeImg($img->mime());
-                if($img_type == ".err") {
+                if ($img_type == ".err") {
                     return false;
                 }
                 $str = str_random(8);
                 $image_path = $str . $img_type;
-                $img->fit(480, 360)->save($uploadDir ."/". $image_path);
+                $img->fit(480, 360)->save($uploadDir . "/" . $image_path);
                 return $image_path;
             }
         }
         return $request->has('old_image') ? $request->old_image : '';
     }
 
-    private function getTypeImg($mime) {
+    private function getTypeImg($mime)
+    {
         if ($mime == "image/gif") {
             return ".gif";
-        } else if ($mime == "image/jpeg") {
-            return ".jpg";
-        } else if ($mime == "image/png") {
-            return ".png";
         } else {
-            return ".err";
+            if ($mime == "image/jpeg") {
+                return ".jpg";
+            } else {
+                if ($mime == "image/png") {
+                    return ".png";
+                } else {
+                    return ".err";
+                }
+            }
         }
 
     }
-
 }

@@ -5,17 +5,19 @@
  * Date: 15.05.2017
  * Time: 22:43
  */
+
 namespace App\JavaScript;
 
 use Storage;
 
-class JavaScriptMaker {
-
+class JavaScriptMaker
+{
     protected $content;
     protected $typeScript;
     protected $script_js;
 
-    public function setJs($type, $request = "", $static = true, $token = "") {
+    public function setJs($type, $request = "", $static = true, $token = "")
+    {
         $this->script_js = "
         $('#amount-area_1').click(function () {
         $('#area_1_search').toggle();
@@ -358,10 +360,10 @@ class JavaScriptMaker {
     
         setTimeout(function(){\$('#box').fadeOut('fast')},3000);
         ";
-       switch ($type) {
-           case "filter":
-               if ($static) {
-                   $this->content = "
+        switch ($type) {
+            case "filter":
+                if ($static) {
+                    $this->content = "
                         $(document).ready(function() {
                             $( \"#slider-range-floor\" ).slider({
                                 range: true,
@@ -744,22 +746,22 @@ class JavaScriptMaker {
                             });
                             $this->script_js
                         });";
-               } else {
-                 $floor_min = $request->input("floor_min");
-                 $floor_max = $request->input("floor_max");
-                 $floorInObj_2_min = $request->input("floorInObj_2_min");
-                 $floorInObj_2_max = $request->input("floorInObj_2_max");
-                 $floorInObj_1_min = $request->input("floorInObj_1_min");
-                 $floorInObj_1_max = $request->input("floorInObj_1_max");
-                 $square_1_min = $request->input("square_1_min");
-                 $square_1_max = $request->input("square_1_max");
-                 $square_2_min = $request->input("square_2_min");
-                 $square_2_max = $request->input("square_2_max");
-                 $square_earth_min = $request->input("square_earth_min");
-                 $square_earth_max = $request->input("square_earth_max");
-                 $distance_min = $request->input("distance_min");
-                 $distance_max = $request->input("distance_max");
-                 $this->content = "
+                } else {
+                    $floor_min = $request->input("floor_min");
+                    $floor_max = $request->input("floor_max");
+                    $floorInObj_2_min = $request->input("floorInObj_2_min");
+                    $floorInObj_2_max = $request->input("floorInObj_2_max");
+                    $floorInObj_1_min = $request->input("floorInObj_1_min");
+                    $floorInObj_1_max = $request->input("floorInObj_1_max");
+                    $square_1_min = $request->input("square_1_min");
+                    $square_1_max = $request->input("square_1_max");
+                    $square_2_min = $request->input("square_2_min");
+                    $square_2_max = $request->input("square_2_max");
+                    $square_earth_min = $request->input("square_earth_min");
+                    $square_earth_max = $request->input("square_earth_max");
+                    $distance_min = $request->input("distance_min");
+                    $distance_max = $request->input("distance_max");
+                    $this->content = "
                     $(document).ready(function() {
                         $( \"#slider-range-floor\" ).slider({
                             range: true,
@@ -1219,12 +1221,12 @@ class JavaScriptMaker {
                         $('#amount-price').val(summ);                    
                         $this->script_js
                     });
-                 ";   
-               }
-               break;
-           case "obj-view":
-               if ($static) {
-                   $this->content = "
+                 ";
+                }
+                break;
+            case "obj-view":
+                if ($static) {
+                    $this->content = "
                         $(document).ready(function() {
                             $('#imageGallery').lightSlider({
                                 gallery:true,
@@ -1264,8 +1266,8 @@ class JavaScriptMaker {
                             myMap.controls.add('typeSelector')
                             myMap.geoObjects.add(_point);});
                    ";
-               } else {
-                   $this->content = "
+                } else {
+                    $this->content = "
                 $(document).ready(function() {
                     $('#imageGallery').lightSlider({
                         gallery:true,
@@ -1313,9 +1315,10 @@ class JavaScriptMaker {
                     myMap.controls.add('typeSelector')
                     myMap.geoObjects.add(_point);});
                     ";
-               }
-               break;
-           case "obj-create": $this->content = "
+                }
+                break;
+            case "obj-create":
+                $this->content = "
                 ymaps.ready(function () {
                 var myMap = window.map = new ymaps.Map('YMapsID', {
                             center: [48.7979,44.7462],
@@ -1407,7 +1410,7 @@ class JavaScriptMaker {
                                 var token = \"$token\";
                                 $.ajax({
                                     type: 'POST',
-                                    url: '".route('adminObjDelImg')."',
+                                    url: '" . route('adminObjDelImg') . "',
                                     data: \"file=\"+name+\"&obj_id=\"+id+\"&tmp_img=\"+tmp_img+\"&_token=\"+token,
                                     dataType: 'html'
                                 });
@@ -1505,8 +1508,9 @@ class JavaScriptMaker {
                                     });                        
                         });
                 ";
-               break;
-           case "obj-edit": $this->content = "
+                break;
+            case "obj-edit":
+                $this->content = "
                     $(function() {
                         var form = $(\"#objCreate\");
                         form.validate({                           
@@ -1585,7 +1589,7 @@ class JavaScriptMaker {
                                 var token = \"$token\";
                                 $.ajax({
                                     type: 'POST',
-                                    url: '".route('adminObjDelImg')."',
+                                    url: '" . route('adminObjDelImg') . "',
                                     data: \"file=\"+name+\"&obj_id=\"+id+\"&_token=\"+token,
                                     dataType: 'html'
                                 });
@@ -1596,7 +1600,7 @@ class JavaScriptMaker {
                                 thisDropzone = this;                               
                                 var id = $('#obj-id').val();
                                 <!-- 4 -->
-                                $.get('".route('adminObjGetImg')."',{ objid: id}).done( function (data) {
+                                $.get('" . route('adminObjGetImg') . "',{ objid: id}).done( function (data) {
                                     $.each(data, function (index, item) {
                                         //// Create the mock file:
                                         var mockFile = {
@@ -1612,7 +1616,7 @@ class JavaScriptMaker {
                                         // And optionally show the thumbnail of the file:
                                         //thisDropzone.emit(\"thumbnail\", mockFile, \"uploads / \"+item.name);
                     
-                                        thisDropzone.createThumbnailFromUrl(mockFile, \"".asset(config('settings.theme'))."/uploads/images/".$request->id."/\" + item . name);
+                                        thisDropzone.createThumbnailFromUrl(mockFile, \"" . asset(config('settings.theme')) . "/uploads/images/" . $request->id . "/\" + item . name);
 
                                         thisDropzone . emit(\"complete\", mockFile);
 
@@ -1624,14 +1628,14 @@ class JavaScriptMaker {
     $(function () {
     $(\"#comforts-no-border\").multiPicker({
                                 selector	: \"checkbox\",
-                                prePopulate : ['".$this->getEditComforts($request)."'],
+                                prePopulate : ['" . $this->getEditComforts($request) . "'],
                                 cssOptions : {
                                 size    : \"large\"
                                 }
                             });
                         });
     $(document) . ready(function () {
-        ".$this->getEditScript($request)."
+        " . $this->getEditScript($request) . "
         $('#obj_type').change(function () {
             var myChoise = $ ('#obj_type :selected').val();
             if (myChoise == 2) {
@@ -1708,20 +1712,23 @@ class JavaScriptMaker {
                 });
             });
                 ";
-               break;
-           default:
-               break;
-       }
-    $this->storageJs();
+                break;
+            default:
+                break;
+        }
+        $this->storageJs();
     }
 
-    private function getEditScript($object) {
+    private function getEditScript($object)
+    {
         switch ($object->category) {
-            case "1": $text = "
+            case "1":
+                $text = "
                     $(\"#obj_type option\").not(\"[value=1]\").attr(\"disabled\", \"disabled\");
         ";
                 break;
-            case "2": $text = "
+            case "2":
+                $text = "
                     $('#obj_form_1').hide();
                     $('#room').hide();
                     $('#build_type_1').hide();
@@ -1738,18 +1745,20 @@ class JavaScriptMaker {
                     $(\"#obj_type option\").not(\"[value=2]\").attr(\"disabled\", \"disabled\");
         ";
                 break;
-            case "3": $text = "
+            case "3":
+                $text = "
                     $('#obj_form_3').show();
                     $('#obj_form_1').hide();
                     $(\"#obj_type option\").not(\"[value=3]\").attr(\"disabled\", \"disabled\");
         ";
                 break;
-            default: break;
+            default:
+                break;
         }
         $text .= "
                     ymaps.ready(function () {
             var myMap = window.map = new ymaps.Map('YMapsID', {
-                    center: [".$object->geo."],
+                    center: [" . $object->geo . "],
                     zoom: 16,
                     behaviors: ['default']
 
@@ -1759,8 +1768,8 @@ class JavaScriptMaker {
                 new ymaps.control.ZoomControl()
         );
         myMap.controls.add('typeSelector'),
-                     _point = new ymaps.Placemark([".$object->geo."], {
-                balloonContentBody: \"".$object->address."\"
+                     _point = new ymaps.Placemark([" . $object->geo . "], {
+                balloonContentBody: \"" . $object->address . "\"
                 
                     });
                     myMap.geoObjects.add(_point);});
@@ -1778,9 +1787,10 @@ class JavaScriptMaker {
         return $text;
     }
 
-    private function getEditComforts($object) {
+    private function getEditComforts($object)
+    {
         $comforts_id = array();
-        if(!$object->comforts->isEmpty()) {
+        if (!$object->comforts->isEmpty()) {
             foreach ($object->comforts as $comfort) {
                 $comforts_id[] = $comfort->title;
             }
@@ -1788,9 +1798,8 @@ class JavaScriptMaker {
         return implode("','", $comforts_id);
     }
 
-    private function storageJs() {
+    private function storageJs()
+    {
         Storage::disk('js')->put('script.js', $this->content);
     }
-
-
 }

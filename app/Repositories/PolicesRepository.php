@@ -10,10 +10,10 @@ namespace App\Repositories;
 
 use App\Police;
 
-class PolicesRepository extends Repository {
-
-    public function __construct(Police $police) {
+class PolicesRepository extends Repository
+{
+    public function __construct(Police $police)
+    {
         $this->model = $police;
     }
-
 }

@@ -11,13 +11,15 @@ namespace App\Repositories;
 use App\Call;
 
 
-class CallRepository extends Repository {
-
-    public function __construct(Call $call) {
+class CallRepository extends Repository
+{
+    public function __construct(Call $call)
+    {
         $this->model = $call;
     }
 
-    public function Add($call) {
+    public function Add($call)
+    {
 
         $this->model->create([
             'number' => $call['number'],
@@ -30,5 +32,4 @@ class CallRepository extends Repository {
         dump("СОздание");
         return true;
     }
-
 }

@@ -3,23 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Comfort;
-use App\Repositories\ComfortsRepository;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Admin\AdminController;
 use App\Repositories\AdmMenusRepository;
-use App\Repositories\AobjectRepository;
+use App\Repositories\ComfortsRepository;
 
 class ComfortController extends AdminController
 {
-    
     protected $c_rep;
-    
-    public function __construct(ComfortsRepository $c_rep, AdmMenusRepository $m_rep) {
-       parent::__construct(new \App\Repositories\AdmMenusRepository(new \App\AdmMenu), new \App\Repositories\SettingsRepository(new \App\Setting()), new \App\Repositories\AobjectsRepository(new \App\Aobject()), new \App\User);
+
+    public function __construct(ComfortsRepository $c_rep, AdmMenusRepository $m_rep)
+    {
+        parent::__construct(new \App\Repositories\AdmMenusRepository(new \App\AdmMenu),
+            new \App\Repositories\SettingsRepository(new \App\Setting()),
+            new \App\Repositories\AobjectsRepository(new \App\Aobject()), new \App\Models\User);
 //        if(Gate::denies('VIEW_ADMIN')) {
 //            abort(403);
 //        }
-        $this->template = config('settings.theme').'.admin.index';
+        $this->template = config('settings.theme') . '.admin.index';
         $this->c_rep = $c_rep;
         $this->m_rep = $m_rep;
     }
@@ -33,9 +33,9 @@ class ComfortController extends AdminController
     {
         $this->checkUser();
         $comforts = $this->c_rep->get();
-        $this->content = view(config('settings.theme').'.admin.comforts')->with(array("comforts" => $comforts))->render();
-        $this->title = 'Удобства';    
-        return $this->renderOutput();          
+        $this->content = view(config('settings.theme') . '.admin.comforts')->with(array("comforts" => $comforts))->render();
+        $this->title = 'Удобства';
+        return $this->renderOutput();
     }
 
     /**
@@ -51,7 +51,7 @@ class ComfortController extends AdminController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -64,7 +64,7 @@ class ComfortController extends AdminController
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -75,7 +75,7 @@ class ComfortController extends AdminController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -86,8 +86,8 @@ class ComfortController extends AdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -98,16 +98,16 @@ class ComfortController extends AdminController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Comfort $comfort)
     {
         $this->checkUser();
-         if ($this->c_rep->destroy($comfort->id)) {
-             return back()->with(["status" => "Удобство удалено"]);
-         } else {
-             return back()->with(["error" => "Ошибка удаления"]);
-         }
+        if ($this->c_rep->destroy($comfort->id)) {
+            return back()->with(["status" => "Удобство удалено"]);
+        } else {
+            return back()->with(["error" => "Ошибка удаления"]);
+        }
     }
 }

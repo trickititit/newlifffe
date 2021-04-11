@@ -20,12 +20,11 @@ class UserRequest extends FormRequest
     {
         $validator = parent::getValidatorInstance();
 
-        $validator->sometimes('password', 'required|min:6|confirmed', function($input)
-        {
-            if(!empty($input->password) || ((empty($input->password) && $this->route()->getName() !== 'user.update'))) {
-                return TRUE;
+        $validator->sometimes('password', 'required|min:6|confirmed', function ($input) {
+            if (!empty($input->password) || ((empty($input->password) && $this->route()->getName() !== 'user.update'))) {
+                return true;
             }
-            return FALSE;
+            return false;
         });
 
         return $validator;
@@ -42,10 +41,10 @@ class UserRequest extends FormRequest
 
         return [
             'name' => 'required|max:190',
-            'login' => 'required|max:190|unique:users,login,'.$id,
+            'login' => 'required|max:190|unique:users,login,' . $id,
             'role' => 'integer',
             'telefon' => 'required',
-            'email' => 'required|email|max:190|unique:users,email,'.$id
+            'email' => 'required|email|max:190|unique:users,email,' . $id
         ];
     }
 }

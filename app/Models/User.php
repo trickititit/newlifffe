@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,18 +15,26 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'login', 'telefon', 'role_id'
+        'name',
+        'email',
+        'password',
+        'login',
+        'telefon',
+        'role_id'
     ];
 
-    public function polices(){
+    public function polices()
+    {
         return $this->belongsToMany('App\Police');
     }
 
-    public function favorites(){
-        return $this->belongsToMany('App\Object');
+    public function favorites()
+    {
+        return $this->belongsToMany('App\Subject', 'object_user', 'object_id', 'object_id');
     }
 
-    public function a_favorites(){
+    public function a_favorites()
+    {
         return $this->belongsToMany('App\Aobject');
     }
 
@@ -36,22 +44,27 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    public function role() {
+    public function role()
+    {
         return $this->belongsTo('App\Role');
     }
 
-    public function scopeRieltors($query) {
+    public function scopeRieltors($query)
+    {
         return $query->where("role_id", "!=", "2");
     }
-    
-    public function completedObjects() {
-        return $this->hasMany('App\Object', "completed_id");
+
+    public function completedObjects()
+    {
+        return $this->hasMany('App\Subject', "completed_id");
     }
 
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->role->name == "admin";
     }
 }

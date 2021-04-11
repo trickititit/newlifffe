@@ -17,9 +17,9 @@
                 <td>{{$comfort->title}}</td>
                 <td>{{$comfort->desc}}</td>
                 <td>{{$comfort->alias}}</td>
-                <td>{!! Form::open(["url" => route('comfort.destroy', ["comfort" => $comfort->alias]), 'method' => "POST", "id" => "comfortDelete"]) !!}
-                    {!! Form::button('Удалить', ['class' => 'btn btn-danger','type'=>'submit']) !!}
+                <td>{!! Form::open(["url" => route('comfort.destroy', $comfort->alias), "id" => "comfortDelete"]) !!}
                     {!! Form::hidden('_method', "DELETE") !!}
+                    {!! Form::button('Удалить', ['class' => 'btn btn-danger','type'=>'submit']) !!}
                     {!! Form::close() !!}
                     </td>
             </tr>

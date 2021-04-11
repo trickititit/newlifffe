@@ -7,11 +7,11 @@
  */
 
 namespace App\Components;
+
 use Storage;
 
 class JavaScriptMaker
 {
-
     protected $content;
     protected $typeScript;
     protected $script_js;
@@ -19,9 +19,15 @@ class JavaScriptMaker
     protected $cat_script_js;
     protected $specOffer_js;
 
-    public function setJs($type, $request = "", $static = true, $token = "", $randStr, $specOffer = false)
-    {
-
+    public function setJs(
+        $type,
+        $request = "",
+        $static = true,
+        $token = "",
+        $randStr,
+        $specOffer = false,
+        $subjectType = 'agency'
+    ) {
         $this->sliders = "
         function initSlider(slider) {
         switch (slider) {
@@ -2220,10 +2226,9 @@ class JavaScriptMaker
                             init: function () {
                                 thisDropzone = this;                               
                                 var id = $('#obj-id').val();
-                                <!-- 4 -->
-                                $.get('" . route('adminObjGetImg') . "',{ objid: id}).done( function (data) {
+                                $.get('" . route('adminObjGetImg') . "', { objtype:'" . $subjectType . "', objid:id }).done( function (data) {
                                     $.each(data, function (index, item) {
-                                        //// Create the mock file:
+                                        // Create the mock file:
                                         var mockFile = {
                                             name: item.name,
                                             size: item.size,
@@ -2232,16 +2237,14 @@ class JavaScriptMaker
                                         };
                     
                                         // Call the default addedfile event handler
-                                        thisDropzone.emit(\"addedfile\", mockFile);
+                                        thisDropzone.emit('addedfile', mockFile);
                     
                                         // And optionally show the thumbnail of the file:
-                                        //thisDropzone.emit(\"thumbnail\", mockFile, \"uploads / \"+item.name);
-                    
-                                        thisDropzone.createThumbnailFromUrl(mockFile, \"" . asset(config('settings.theme')) . "/uploads/images/" . $request->id . "/\" + item . name);
+//                                        thisDropzone.emit('thumbnail', mockFile, '" . asset(config('settings.theme')) . "/uploads/images/" . $subjectType . "/" . $request->id . "/' + item.name);
 
-                                        thisDropzone . emit(\"complete\", mockFile);
-
-                                        thisDropzone . files . push(mockFile);
+                                        thisDropzone.createThumbnailFromUrl(mockFile, '" . asset(config('settings.theme')) . "/uploads/images/" . $subjectType . "/" . $request->id . "/' + item.name);
+                                        thisDropzone.emit('complete', mockFile);
+                                        thisDropzone.files.push(mockFile);
                                         });
                                     });
                                 }
@@ -3339,7 +3342,7 @@ useragent.push('Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 
 useragent.push('Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02');
 
 //Здесь находится страничка, которую нужно спарсить
-var parseUrl = '".$request."';
+var parseUrl = '" . $request . "';
 var jobs_list = [];
 var page = require('webpage').create();
 
@@ -3558,7 +3561,7 @@ doit(page, parseUrl, jobs_list, 1);
                 $this->storageJs($randStr, true);
                 return;
                 break;
-                case "parse-avito-page":
+            case "parse-avito-page":
                 $this->content = "
                 // Example using HTTP POST operation
 
@@ -3572,8 +3575,8 @@ useragent.push('Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 
 useragent.push('Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02');
 
 //Здесь находится страничка, которую нужно спарсить
-var parseUrl = '".$request[1]."';
-var title = '".$request[0]."';
+var parseUrl = '" . $request[1] . "';
+var title = '" . $request[0] . "';
 var job = {title: title, url: parseUrl, phone: \"\", address: \"\", city: \"\", price: \"\", category: \"\", title_obj: \"\", contact_name: \"\", desc : \"\", person_name : \"\", id : \"\", date: \"\", material_h: \"\", material_k: \"\", material_c: \"\", floor_in: \"\", distance: \"\", deal: \"\", geo: \"none\"};                               
 var jobs_list = [];
 var debug = false;
@@ -3914,10 +3917,10 @@ next_page(page, job);
             $geo = ["48.7979", "44.7462"];
         }
         $text = "
-            marker = new H.map.Marker({lat:". $geo[0] .", lng:". $geo[1] ."});
+            marker = new H.map.Marker({lat:" . $geo[0] . ", lng:" . $geo[1] . "});
             marker.label = '" . $object->address . "';
             map.addObject(marker);
-            map.setCenter({lat:". $geo[0] .", lng:". $geo[1] ."});         
+            map.setCenter({lat:" . $geo[0] . ", lng:" . $geo[1] . "});         
 
             var myChoise = $('#obj_city select').val();
             $('#obj_city select option').each(function () {
@@ -3936,13 +3939,13 @@ next_page(page, job);
     private function getEditComforts($object)
     {
         if (isset($object->comforts)) {
-        $comforts_id = array();
-        if (!$object->comforts->isEmpty()) {
-            foreach ($object->comforts as $comfort) {
-                $comforts_id[] = $comfort->title;
+            $comforts_id = array();
+            if (!$object->comforts->isEmpty()) {
+                foreach ($object->comforts as $comfort) {
+                    $comforts_id[] = $comfort->title;
+                }
             }
-        }
-        return implode("','", $comforts_id);
+            return implode("','", $comforts_id);
         }
     }
 
@@ -3954,6 +3957,4 @@ next_page(page, job);
             Storage::disk('js')->put('script-' . $str . '.js', $this->content);
         }
     }
-
-
 }

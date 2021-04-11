@@ -8,12 +8,10 @@
 
 namespace App\Parsers\Avito;
 
+use App\Image;
 use GuzzleHttp\Client;
-use App\Repositories\AobjectsRepository;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Log;
-use App\Aobject;
+use App\Repositories\AobjectsRepository;
 
 
 /**
@@ -22,29 +20,41 @@ use App\Aobject;
  */
 class AvitoMobileParser
 {
+    const LOCATION_ID_VOLZHSKIY = 624850; // Волжский
+    const LOCATION_ID_SREDNYAYA_AHTUBA = 625270; // Средняя Ахтуба
+
+    const CATEGORY_ID_FLAT = 24;
+    const CATEGORY_ID_ROOM = 23;
+    const CATEGORY_ID_HOUSE = 25;
+
     /**
      * @var string
      * Без последнего слеша
      */
     public $BaseUrl = 'https://m.avito.ru';
+//    public $BaseUrl = 'https://www.youtube.com';
     /**
      * @var string
      */
-    public $UserAgent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Mobile Safari/537.36';
+//    public $UserAgent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Mobile Safari/537.36';
+    public $UserAgent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Mobile Safari/537.36';
     public $Delay = 5;
+
     /**
      * @var int
      * 30 - дефолт мобильной версии.
      * 100 вроде нормально.
      */
     public $Limit = 30;
+
     /**
      * @var int
      * 24 - квартиры
      * 23 - комнаты
      * 25 - дома, дачи, коттеджи
      */
-    public $CategoryId = 24;
+    public $CategoryId = self::CATEGORY_ID_FLAT;
+
     /**
      * @var bool
      * Искать только частные объявления.
@@ -59,13 +69,14 @@ class AvitoMobileParser
      * 624850 - Волжский
      * 625270 - Средняя Ахтуба
      */
+    public $LocationId = self::LOCATION_ID_VOLZHSKIY;
 
-    public $LocationId = 624850;
     /**
      * @var mixed|string
      * Типо секретный апи ключ
      */
     private $key = '';
+
     /**
      * @var
      */
@@ -82,19 +93,25 @@ class AvitoMobileParser
     public $proxy = 'tcp://12.34.56.78:3128';
 
 
-
     public function __construct(AobjectsRepository $a_obj)
     {
+//        $html = file_get_contents('D:\OSPanel\domains\house-exchange\avito-item.txt');
+//        $initial_data = trim(urldecode($this->getInitialData($html)), '"');
+//        $data = json_decode($initial_data);
+//        $obj = $this->generateObject($data);
+
         $default_config = [
-            'verify' => TRUE,
+            'verify' => true,
             'timeout' => 30,
             'headers' => [
                 'User-Agent' => $this->UserAgent,
+//                'Content-Type' => 'application/json',
+//                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             ],
             'cookie' => true,
             'cookies' => true,
             'http-error' => false,
-            //  'proxy' => $proxy
+//            'proxy' => $this->proxy,
         ];
         $this->client = new Client($default_config);
         $this->a_obj = $a_obj;
@@ -102,31 +119,31 @@ class AvitoMobileParser
 
     }
 
-    private function getCity($location_id)
+    /**
+     * @param int $locationId
+     * @return mixed
+     */
+    private function getCityNameByLocationId(int $locationId)
     {
-        switch ($location_id) {
-            case "624850":
-                return "Волжский";
-            case "625270":
-                return "Средняя Ахтуба";
-            default:
-                return false;
-        }
+        return [
+            self::LOCATION_ID_VOLZHSKIY => 'Волжский',
+            self::LOCATION_ID_SREDNYAYA_AHTUBA => 'Средняя Ахтуба',
+        ][$locationId];
     }
 
     private function init()
     {
-        $res = $this->client->request('GET', $this->BaseUrl, [
-        ]);
+        $res = $this->client->request('GET', $this->BaseUrl, []);
 
-        if ($res->getStatusCode() != '200')
+        if ($res->getStatusCode() != '200') {
             throw new \Exception('Не удается подключиться к сайту');
-  //      $subject = $res->getBody();
+        }
+        //      $subject = $res->getBody();
 
 //        $tag = 'script';
 //        $matchGroup = $this->getTags($tag, $subject);
         $this->key = "af0deccbgcgidddjgnvljitntccdduijhdinfgjgfjir";
-   //     foreach ($matchGroup as $item) {
+        //     foreach ($matchGroup as $item) {
 //            if (strpos($item, 'mstatic/build') !== false) {
 //                if (preg_match('~"([^"]*)"~u', $item, $m)) {
 //
@@ -150,7 +167,9 @@ class AvitoMobileParser
      */
     public function ParseAllPages($page, $lastStamp)
     {
-        if ($this->key == null) throw new \Exception('Нет ключа');
+        if ($this->key == null) {
+            throw new \Exception('Нет ключа');
+        }
 
         $more = true;
         $parsedCount = 0;
@@ -158,30 +177,38 @@ class AvitoMobileParser
         while ($more) {
             if ($this->IsPrivateOnly) {
                 switch ($this->CategoryId) {
-
-
                     case "23":
-                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId . '&categoryId=' . $this->CategoryId . '&params[200]=1054&page=' . $page . '&lastStamp=' . $lastStamp . '&display=list&limit=' . $this->Limit;
+                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId
+                            . '&categoryId=' . $this->CategoryId . '&params[200]=1054&page=' . $page . '&lastStamp=' . $lastStamp
+                            . '&display=list&limit=' . $this->Limit;
                         break;
                     case "24":
-                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId . '&categoryId=' . $this->CategoryId . '&params[201]=1059&page=' . $page . '&lastStamp=' . $lastStamp . '&display=list&limit=' . $this->Limit;
-                    break;
+                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId
+                            . '&categoryId=' . $this->CategoryId . '&params[201]=1059&page=' . $page . '&lastStamp=' . $lastStamp
+                            . '&display=list&limit=' . $this->Limit;
+                        //https://m.avito.ru/api/9/items?key=af0deccbgcgidddjgnvljitntccdduijhdinfgjgfjir&owner[]=private&locationId=624850&categoryId=24&params[201]=1059&page=1&display=list&limit=30
+                        break;
                     case "25":
-                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId . '&categoryId=' . $this->CategoryId . '&params[202]=1064&page=' . $page . '&lastStamp=' . $lastStamp . '&display=list&limit=' . $this->Limit;
-                    break;
+                        $link = '/api/9/items?key=' . $this->key . '&owner[]=private&locationId=' . $this->LocationId
+                            . '&categoryId=' . $this->CategoryId . '&params[202]=1064&page=' . $page . '&lastStamp=' . $lastStamp
+                            . '&display=list&limit=' . $this->Limit;
+                        break;
                     default:
                         throw new \Exception('Неверный тип запроса LocationId');
                         break;
                 }
-
-            } else
-                $link = '/api/9/items?key=' . $this->key . '&locationId=' . $this->LocationId . '&categoryId=' . $this->CategoryId . '&page=' . $page . '&lastStamp=' . $lastStamp . '&display=list&limit=' . $this->Limit;
+            } else {
+                $link = '/api/9/items?key=' . $this->key . '&locationId=' . $this->LocationId . '&categoryId=' . $this->CategoryId
+                    . '&page=' . $page . '&lastStamp=' . $lastStamp . '&display=list&limit=' . $this->Limit;
+            }
             // $cookieJar = $this->client->getConfig('cookies');
             //  $cookieJar->toArray();
             //  dd($cookieJar);
             //dd($link);
             $res = $this->client->request('GET', $this->BaseUrl . $link, []);
-            if ($res->getStatusCode() != 200) log('Неудачный запрос ' . $link);
+            if ($res->getStatusCode() != 200) {
+                log('Неудачный запрос ' . $link);
+            }
             $content = $res->getBody()->getContents();
             $contents = json_decode($content);
             if ($contents->status != 'ok') {
@@ -211,21 +238,31 @@ class AvitoMobileParser
                 if (count($contents->result->items) < $this->Limit) {
                     $more = false;
                 }
-                foreach ($contents->result->items as $item) {
 
-                    if( $item->type == "vip") continue;
-                    if( $item->type == "witcher") continue;
-                    if( $item->type == "groupTitle") continue;
-                    if( $item->type == "xlItem") continue;
+                foreach ($contents->result->items as $item) {
+                    if (in_array($item->type, [
+                        "vip",
+                        "witcher",
+                        "groupTitle",
+                        "xlItem",
+                    ])) {
+                        continue;
+                    }
+
                     $parsingCount++;
-                    if($parsingCount > $this->mainCount) break;
+                    if ($parsingCount > $this->mainCount) {
+                        break;
+                    }
+
                     try {
                         $uri = $item->value->uri_mweb;
                         $tmp_obj = $this->exists($item);
                         if (!$tmp_obj) {
                             $req = $this->client->request('GET', $this->BaseUrl . $uri, []);
                             //dd($this->BaseUrl . $uri);
-                            if ($req->getStatusCode() != 200) throw new \Exception('Неудачный запрос ' . $uri);
+                            if ($req->getStatusCode() != 200) {
+                                throw new \Exception('Неудачный запрос ' . $uri);
+                            }
                             $html = $req->getBody()->getContents();
                             //dd($html);
                             $initial_data = trim(urldecode($this->getInitialData($html)), '"');
@@ -235,21 +272,22 @@ class AvitoMobileParser
                                 throw new \Exception("Невалидный JSON на " . $uri);
                             }
                             $obj = $this->generateObject($data);
-                            if(!isset($obj->phone)) $obj->phone = "none";
-                            $obj->city = $this->getCity($this->LocationId);
-                            if(isset($item->value->coords)) {
-                                $obj->geo = $item->value->coords->lat .", " . $item->value->coords->lng;
+
+                            if (isset($item->value->coords)) {
+                                $obj->geo = $item->value->coords->lat . ", " . $item->value->coords->lng;
                             } else {
                                 $obj->geo = "47.8745, 44.7697";
                             }
                             $obj->area = $item->value->location ?? "";
                             $this->setAddress($obj);
+
                             dump($obj);
                             $this->a_obj->addObj($obj);
+                            $this->uploadImages($obj->id, $item->value);
                             sleep($this->Delay);
                         } else {
                             $ao = $this->newFromStd($tmp_obj);
-                            if(isset($item->value->coords)) {
+                            if (isset($item->value->coords)) {
                                 $ao->geo = $item->value->coords->lat . ", " . $item->value->coords->lng;
                             } else {
                                 $ao->geo = "47.8745, 44.7697";
@@ -272,16 +310,19 @@ class AvitoMobileParser
         echo($count . ' ' . $parsedCount);
     }
 
-    private function getPhone($id){
+    private function getPhone($id)
+    {
         try {
-            $url = "/api/1/items/". $id . "/phone?key=". $this->key;
+            $url = "/api/1/items/" . $id . "/phone?key=" . $this->key;
             $req = $this->client->request('GET', $this->BaseUrl . $url, []);
-            if ($req->getStatusCode() != 200) throw new \Exception('Неудачный запрос телефона' . $url);
+            if ($req->getStatusCode() != 200) {
+                throw new \Exception('Неудачный запрос телефона' . $url);
+            }
             $html = $req->getBody()->getContents();
             $json = json_decode($html);
             //dd(substr($json->result->action->uri, -11));
             return substr($json->result->action->uri, -11);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
 
         }
     }
@@ -290,7 +331,7 @@ class AvitoMobileParser
     {
         $instance = new \App\Aobject();
 
-        foreach ( (array) $std as $attribute => $value) {
+        foreach ((array)$std as $attribute => $value) {
             $instance->{$attribute} = $value;
         }
 
@@ -300,7 +341,7 @@ class AvitoMobileParser
     private function exists($item)
     {
         $results = DB::select('select * from aobjects where id = :id', ['id' => $item->value->id]);
-        if($results) {
+        if ($results) {
             return $results[0];
         } else {
             return false;
@@ -323,8 +364,9 @@ class AvitoMobileParser
         $re = '/params:{key\:"([^"]+)/m';
         preg_match_all($re, $xml, $matches, PREG_SET_ORDER, 0);
         foreach ($matches as $match) {
-            if (strlen($match[1]) > 11)
+            if (strlen($match[1]) > 11) {
                 return $match[1];
+            }
         }
 
     }
@@ -334,31 +376,63 @@ class AvitoMobileParser
         $re = '/tel:([+0-9]{12})/m';
         preg_match_all($re, $xml, $matches, PREG_SET_ORDER, 0);
         foreach ($matches as $match) {
-            if (strlen($match[1]) > 11)
+            if (strlen($match[1]) > 11) {
                 return $match[1];
+            }
         }
-
     }
 
-    private function setAddress(&$obj) {
+    private function setAddress(&$obj)
+    {
         if ($obj->area != "") {
             $loc = trim(preg_replace('/р-н/m', '', $obj->area));
-            $re = '/'. $loc .',(.*?)/mU';
-            preg_match_all($re, $obj->address, $matches, PREG_SET_ORDER, 0); // Print the entire match result var_dump($matches);
+            $re = '/' . $loc . ',(.*?)/mU';
+            preg_match_all($re, $obj->address, $matches, PREG_SET_ORDER,
+                0); // Print the entire match result var_dump($matches);
             $obj->address = trim($matches[0][1] ?? $obj->address);
+        }
+    }
+
+    private function uploadImages($subjectID, $item)
+    {
+        $item = json_decode(json_encode($item), true);
+
+        if (isset($item['imageList'])) {
+            foreach ($item['imageList'] as $imageSizesUrls) {
+                $this->uploadImageWithCurl($imageSizesUrls, $subjectID);
+            }
+        } elseif (isset($item['images']['main'])) {
+            $this->uploadImageWithCurl($item['images']['main'], $subjectID);
+        }
+    }
+
+    private function uploadImageWithCurl($imageSizesUrls, $subjectID)
+    {
+        $imageUrl = '';
+        if (isset($imageSizesUrls['1280x960'])) {
+            $imageUrl = $imageSizesUrls['1280x960'];
+        } elseif (isset($imageSizesUrls['640x480'])) {
+            $imageUrl = $imageSizesUrls['640x480'];
+        } elseif (isset($imageSizesUrls['432x324'])) {
+            $imageUrl = $imageSizesUrls['432x324'];
+        }
+
+        if ($imageUrl) {
+            Image::uploadWithCurl($imageUrl, $subjectID, 'avito', 0, true);
         }
     }
 
     public function generateObject($initial_data)
     {
-        //dump($initial_data);
         $obj = (object)array('id' => $initial_data->item->item->id);
         $obj->title_obj = $initial_data->item->item->title;
         $obj->price = $this->getAllInt($initial_data->item->item->price->value);
         $obj->date = $initial_data->item->item->time;
         $obj->desc = $initial_data->item->item->description;
         $obj->person_name = $initial_data->item->item->seller->name;
+        $obj->city = $this->getCityNameByLocationId($initial_data->item->item->locationId);
         $obj->address = $initial_data->item->item->address;
+        $obj->phone_is_anonymous = isset($initial_data->item->item->anonymousNumber);
         $obj->phone = $this->getPhone($initial_data->item->item->id);
 //        foreach ($initial_data->item->item->contacts->list as $contact) {
 //            if ($contact->type == 'phone') {
@@ -368,6 +442,9 @@ class AvitoMobileParser
 //                break;
 //            }
 //        }
+        if (!isset($obj->phone)) {
+            $obj->phone = "none";
+        }
         $obj->url = $initial_data->item->item->sharing->url;
         $obj->category = $initial_data->item->item->categoryId;
         $title_obj = explode(" ", $obj->title_obj);
@@ -415,7 +492,7 @@ class AvitoMobileParser
                     $obj->type = $parameter->description;
                     break;
                 case "Расстояние до города, км":
-                    if($parameter->description == "В черте города") {
+                    if ($parameter->description == "В черте города") {
                         $obj->distance = 0;
                     } else {
                         $obj->distance = $parameter->description;
@@ -431,9 +508,10 @@ class AvitoMobileParser
                     break;
             }
         }
-        if(!isset($obj->distance)) {
+        if (!isset($obj->distance)) {
             $obj->distance = 0;
         }
+
         return $obj;
     }
 
@@ -443,8 +521,28 @@ class AvitoMobileParser
         $build_types = ["Кирпичный", "Панельный", "Блочный", "Монолитный", "Деревянный"];
         $search_types = ["дом", "дачу", "коттедж", "таунхаус"];
         $types = ["Дом", "Дача", "Коттедж", "Таунхаус"];
-        $search_build_types_2 = ["кирпич", "брус", "бревно", "газоблоки", "металл", "пеноблоки", "сэндвич-панели", "ж/б панели", "экспериментальные материалы"];
-        $build_types_2 = ["Кирпич", "Брус", "Бревно", "Металл", "Газоблоки", "Пеноблоки", "Сендвич-панели", "Ж/б панели", "Экспериментальные материалы"];
+        $search_build_types_2 = [
+            "кирпич",
+            "брус",
+            "бревно",
+            "газоблоки",
+            "металл",
+            "пеноблоки",
+            "сэндвич-панели",
+            "ж/б панели",
+            "экспериментальные материалы"
+        ];
+        $build_types_2 = [
+            "Кирпич",
+            "Брус",
+            "Бревно",
+            "Металл",
+            "Газоблоки",
+            "Пеноблоки",
+            "Сендвич-панели",
+            "Ж/б панели",
+            "Экспериментальные материалы"
+        ];
         switch ($category) {
             case '1':
                 switch ($param) {
@@ -606,7 +704,7 @@ class AvitoMobileParser
                     case 'build_floors':
                         $floor_ = explode(" ", $string);
                         $floor = explode("/", $floor_[5]);
-                        return (int)($floor[1]??'1');
+                        return (int)($floor[1] ?? '1');
                         # code...
                         break;
                     case 'build_type':
@@ -645,11 +743,12 @@ class AvitoMobileParser
         }
     }
 
-
-
-    public function getAllInt($string) {
+    public function getAllInt($string)
+    {
         $string = preg_replace("/[^0-9]/", '', $string);
-        if ($string == "") $string = 0;
+        if ($string == "") {
+            $string = 0;
+        }
         return $string;
     }
 
@@ -658,8 +757,9 @@ class AvitoMobileParser
         $re = '/__initialData__ = (.+?\")/m';
         preg_match_all($re, $xml, $matches, PREG_SET_ORDER, 0);
         foreach ($matches as $match) {
-            if (strlen($match[1]) > 11)
+            if (strlen($match[1]) > 11) {
                 return $match[1];
+            }
         }
 
     }
@@ -674,5 +774,4 @@ class AvitoMobileParser
         }
 
     }
-
 }

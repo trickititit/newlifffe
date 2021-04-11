@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -21,7 +21,7 @@ class UserPolicy
     {
         $polices = $user->polices;
         foreach ($polices as $police) {
-            if($police->id == 3) {
+            if ($police->id == 3) {
                 return true;
             }
         }
@@ -32,7 +32,7 @@ class UserPolicy
     {
         $polices = $user->polices;
         foreach ($polices as $police) {
-            if($police->id == 1) {
+            if ($police->id == 1) {
                 return true;
             }
         }

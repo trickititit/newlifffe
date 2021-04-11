@@ -52,7 +52,7 @@
                 <a href='{{route('site.object',['object'=>$object->alias])}}' class="spec_offer">
                     @if($object->images->isNotEmpty())
                         @foreach($object->images as $image)
-                            <div class="img_offer" style="background: url({{ asset(config('settings.theme')) }}/uploads/images/{{$image->object_id}}/{{$image->new_name}} ) no-repeat center center; background-size: cover;">
+                            <div class="img_offer" style="background: url({{ asset(config('settings.theme')) }}/uploads/images/agency/{{$image->object_id}}/{{$image->new_name}} ) no-repeat center center; background-size: cover;">
                         @break
                         @endforeach
                     @else

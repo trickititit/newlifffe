@@ -22,9 +22,9 @@
                 <td>{{$user->email}}</td>
                 <td>{{$user->completedObjects->count()}}</td>
                 <td class="users-actions" width="300"><a href="{{route("user.edit", ["user" => $user->id])}}" class="btn btn-inline btn-success-outline">Редактировать</a>
-                    {!! Form::open(["url" => route('user.destroy', ["user" => $user->id]), 'method' => "POST", "id" => "userDelete", "onSubmit" => "return confirm('Вы уверены?');"]) !!}
-                    {!! Form::button('Удалить', ['class' => 'btn btn-inline btn-danger-outline','type'=>'submit']) !!}
+                    {!! Form::open(["url" => route('user.destroy', $user->id), "id" => "userDelete", "onSubmit" => "return confirm('Вы уверены?');"]) !!}
                     {!! Form::hidden('_method', "DELETE") !!}
+                    {!! Form::button('Удалить', ['class' => 'btn btn-inline btn-danger-outline','type'=>'submit']) !!}
                     {!! Form::close() !!}
                 </td>
             </tr>

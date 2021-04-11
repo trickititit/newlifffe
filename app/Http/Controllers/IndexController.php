@@ -2,82 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Object;
-use App\Post;
-use Illuminate\Support\Facades\App;
-use Storage;
-use App\Repositories\ObjectsRepository;
-use App\Repositories\CitiesRepository;
-use App\Repositories\AreasRepository;
-use App\Repositories\AobjectsRepository;
-use Illuminate\Support\Facades\Session;
-use App\Components\JavaScriptMaker;
-use Carbon\Carbon;
 use Menu;
-use Gate;
-use URL;
-use Route;
 use Auth;
+use Storage;
+use App\Post;
+use App\Subject;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Components\JavaScriptMaker;
+use App\Repositories\AreasRepository;
+use App\Repositories\CitiesRepository;
+use App\Repositories\ObjectsRepository;
+use Illuminate\Support\Facades\Session;
+use App\Repositories\AobjectsRepository;
 use App\Parsers\Avito\AvitoMobileParser;
 
 class IndexController extends SiteController
 {
-    public function __construct(ObjectsRepository $o_rep, CitiesRepository $city_rep, AreasRepository $area_rep, AobjectsRepository $aobj_rep) {
-        parent::__construct(new \App\Repositories\AdmMenusRepository(new \App\AdmMenu), new \App\Repositories\SettingsRepository(new \App\Setting), new \App\Object);
+    public function __construct(
+        ObjectsRepository $o_rep,
+        CitiesRepository $city_rep,
+        AreasRepository $area_rep,
+        AobjectsRepository $aobj_rep
+    ) {
+        parent::__construct(new \App\Repositories\AdmMenusRepository(new \App\AdmMenu),
+            new \App\Repositories\SettingsRepository(new \App\Setting), new \App\Subject);
 
 //        if(Gate::denies('VIEW_ADMIN')) {
 //            abort(403);
 //        }
 
-        $this->inc_css_lib = array_add($this->inc_css_lib,  'jq-ui', array('url' => '<link rel="stylesheet" href="'.$this->pub_path.'/css/lib/jqueryui/jquery-ui.min.css">'));
-        $this->inc_css_lib = array_add($this->inc_css_lib,  'da-slider', array('url' => '<link rel="stylesheet" href="'.$this->pub_path.'/css/site.slider.css">'));
-        $this->inc_css_lib = array_add($this->inc_css_lib,  'bx-slider', array('url' => '<link rel="stylesheet" href="'.$this->pub_path.'/css/jquery.bxslider.css">'));
-        $this->inc_css_lib = array_add($this->inc_css_lib,  'hover', array('url' => '<link rel="stylesheet" href="'.$this->pub_path.'/css/hover.css">'));
-        $this->inc_css_lib = array_add($this->inc_css_lib,  'modernizr', array('url' => '<script src="'.$this->pub_path.'/js/modernizr.custom.28468.js"></script>'));
-        $this->inc_js_lib = array_add($this->inc_js_lib,    'bx-slider', array('url' => '<script src="'.$this->pub_path.'/js/jquery.bxslider.min.js"></script>'));
-        $this->inc_js_lib = array_add($this->inc_js_lib,    'cs-slider', array('url' => '<script src="'.$this->pub_path.'/js/jquery.cslider.js"></script>'));
+        $this->inc_css_lib = array_add($this->inc_css_lib, 'jq-ui',
+            array('url' => '<link rel="stylesheet" href="' . $this->pub_path . '/css/lib/jqueryui/jquery-ui.min.css">'));
+        $this->inc_css_lib = array_add($this->inc_css_lib, 'da-slider',
+            array('url' => '<link rel="stylesheet" href="' . $this->pub_path . '/css/site.slider.css">'));
+        $this->inc_css_lib = array_add($this->inc_css_lib, 'bx-slider',
+            array('url' => '<link rel="stylesheet" href="' . $this->pub_path . '/css/jquery.bxslider.css">'));
+        $this->inc_css_lib = array_add($this->inc_css_lib, 'hover',
+            array('url' => '<link rel="stylesheet" href="' . $this->pub_path . '/css/hover.css">'));
+        $this->inc_css_lib = array_add($this->inc_css_lib, 'modernizr',
+            array('url' => '<script src="' . $this->pub_path . '/js/modernizr.custom.28468.js"></script>'));
+        $this->inc_js_lib = array_add($this->inc_js_lib, 'bx-slider',
+            array('url' => '<script src="' . $this->pub_path . '/js/jquery.bxslider.min.js"></script>'));
+        $this->inc_js_lib = array_add($this->inc_js_lib, 'cs-slider',
+            array('url' => '<script src="' . $this->pub_path . '/js/jquery.cslider.js"></script>'));
         //'leaflet' => array('url' => '<script src="'.$this->pub_path.'/leaflet/leaflet.js"></script>'),
         //'leaflet-cluster' => array('url' => '<script src="'.$this->pub_path.'/leaflet/leaflet.markercluster-src.js"></script>'),
-        $this->template = config('settings.theme').'.index';
+        $this->template = config('settings.theme') . '.index';
         $this->o_rep = $o_rep;
         $this->city_rep = $city_rep;
         $this->aobj_rep = $aobj_rep;
         $this->area_rep = $area_rep;
     }
 
-    public function reconstruction() {
+    public function reconstruction()
+    {
         $this->title = "Агенство недвижимости Новая Жизнь";
-        return view(config('settings.theme').'.reconstruct');
+        return view(config('settings.theme') . '.reconstruct');
     }
 
-    public function index(JavaScriptMaker $jsmaker, Post $post, Object $object) {
+    public function index(JavaScriptMaker $jsmaker, Post $post, Subject $object)
+    {
         $this->user = Auth::user();
-        if(!$this->user) {
+        if (!$this->user) {
             return redirect('/reconstruct');
         }
         $this->title = "Агенство недвижимости Новая Жизнь";
         $inwork = $object->InWorkAll()->take(10)->get();
         $posts = $post->OnMain()->get();
         $faq_posts = $post->FAQ()->get();
-        $this->content = view(config('settings.theme').'.front')->with(['posts' => $posts, 'faq' => $faq_posts, "inwork" => $inwork]);
-        $jsmaker->setJs("front", "", ($this->spec_offer_count > 5)? false : true, "", $this->randStr);
+        $this->content = view(config('settings.theme') . '.front')->with([
+            'posts' => $posts,
+            'faq' => $faq_posts,
+            "inwork" => $inwork
+        ]);
+        $jsmaker->setJs("front", "", ($this->spec_offer_count > 5) ? false : true, "", $this->randStr);
         return $this->renderOutput();
     }
 
-    public function parseAvito(Request $request, JavaScriptMaker $jsmaker) {
+    public function parseAvito(Request $request, JavaScriptMaker $jsmaker)
+    {
         $jsmaker->setJs("parse-avito", $request->parse_url, true, "", $this->randStr);
-        $cmd = "phantomjs ".base_path("phantomjs/bin/avito.js");
+        $cmd = "phantomjs " . base_path("phantomjs/bin/avito.js");
         exec($cmd, $output);
         $this->objectAvitoToBase($output, $jsmaker);
     }
 
     /**
+     * Квартиры Волжский
+     *
      * @param JavaScriptMaker $jsmaker
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
 
-    public function curlAvitoK(JavaScriptMaker $jsmaker) {
+    public function curlAvitoK(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -86,18 +105,28 @@ class IndexController extends SiteController
 //        $cmd = 'phantomjs '.base_path("phantomjs/bin/avito.js");
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
+
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
         $parser->UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0";
-        $parser->CategoryId = 24;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_FLAT;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_VOLZHSKIY;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
 
     }
 
-    public function curlAvitoKA(JavaScriptMaker $jsmaker) {
+    /**
+     * Квартиры Средняя Ахтуба
+     *
+     * @param JavaScriptMaker $jsmaker
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function curlAvitoKA(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -107,16 +136,24 @@ class IndexController extends SiteController
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
-        $parser->CategoryId = 24;
-        $parser->LocationId = 625270;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_FLAT;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_SREDNYAYA_AHTUBA;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
     }
 
-    public function curlAvitoH(JavaScriptMaker $jsmaker) {
+    /**
+     * Дома Волжский
+     *
+     * @param JavaScriptMaker $jsmaker
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function curlAvitoH(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -126,15 +163,24 @@ class IndexController extends SiteController
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
-        $parser->CategoryId = 25;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_HOUSE;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_VOLZHSKIY;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
     }
 
-    public function curlAvitoHA(JavaScriptMaker $jsmaker) {
+    /**
+     * Дома Средняя Ахтуба
+     *
+     * @param JavaScriptMaker $jsmaker
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function curlAvitoHA(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -144,16 +190,24 @@ class IndexController extends SiteController
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
-        $parser->CategoryId = 25;
-        $parser->LocationId = 625270;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_HOUSE;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_SREDNYAYA_AHTUBA;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
     }
 
-    public function curlAvitoC(JavaScriptMaker $jsmaker) {
+    /**
+     * Комнаты Волжский
+     *
+     * @param JavaScriptMaker $jsmaker
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function curlAvitoC(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -163,15 +217,24 @@ class IndexController extends SiteController
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
-        $parser->CategoryId = 23;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_ROOM;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_VOLZHSKIY;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
     }
 
-    public function curlAvitoCA(JavaScriptMaker $jsmaker) {
+    /**
+     * Комнаты Средняя Ахтуба
+     *
+     * @param JavaScriptMaker $jsmaker
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function curlAvitoCA(JavaScriptMaker $jsmaker)
+    {
 //        if (request()->ip() != "193.124.189.57"){
 //            abort(404);
 //        }
@@ -181,16 +244,18 @@ class IndexController extends SiteController
 //        exec($cmd, $output);
 //        $this->objectAvitoToBase($output, $jsmaker);
         $parser = new AvitoMobileParser(new \App\Repositories\AobjectsRepository(new \App\Aobject));
-        $parser->CategoryId = 23;
-        $parser->LocationId = 625270;
+        $parser->CategoryId = AvitoMobileParser::CATEGORY_ID_ROOM;
+        $parser->LocationId = AvitoMobileParser::LOCATION_ID_SREDNYAYA_AHTUBA;
+
         try {
             $parser->ParseAllPages(1, Carbon::now()->timestamp - 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
     }
 
-    public function checkArray($array, $type) {
+    public function checkArray($array, $type)
+    {
         if (!preg_match("/\\d\\-к/", $array[1 + $type]) && $array[1 + $type] != "Студия") {
             array_splice($array, 1 + $type, 1);
             return $this->checkArray($array, $type);
@@ -208,26 +273,33 @@ class IndexController extends SiteController
         }
     }
 
-    public function objectAvitoToBase($objects, $jsmaker){
-        $result = ["success" => 0, "error" => 0,"have" => 0, "object_s" => "", "object_e" => "", "object_h" => ""];
+    public function objectAvitoToBase($objects, $jsmaker)
+    {
+        $result = ["success" => 0, "error" => 0, "have" => 0, "object_s" => "", "object_e" => "", "object_h" => ""];
         $text = "";
         $i = 0;
         foreach ($objects as $object_) {
-            if(!$this->isStart($object_, "{")) continue;
+            if (!$this->isStart($object_, "{")) {
+                continue;
+            }
             $parseobject = json_decode($object_);
             if ($this->aobj_rep->getOne($parseobject->id)) {
                 continue;
             }
             $req = [$parseobject->title, $parseobject->url];
             $jsmaker->setJs("parse-avito-page", $req, true, "", $this->randStr);
-            $cmd = "phantomjs ".base_path("phantomjs/bin/avito.js");
+            $cmd = "phantomjs " . base_path("phantomjs/bin/avito.js");
             exec($cmd, $outputs);
             $object_avito = "";
             foreach ($outputs as $output) {
-                if(!$this->isStart($object_, "{")) continue;
+                if (!$this->isStart($object_, "{")) {
+                    continue;
+                }
                 $object_avito = $output;
             }
-            if(!$this->isStart($object_avito, "{")) continue;
+            if (!$this->isStart($object_avito, "{")) {
+                continue;
+            }
             $object = json_decode($object_avito);
             $object->category = mb_strtolower($object->category);
             if ($object->category == "квартиры") {
@@ -254,62 +326,65 @@ class IndexController extends SiteController
                     $object->rooms = $this->findParamOnString($object->title_obj, $object->category, "room", $type);
                     $object->square = $this->findParamOnString($object->title_obj, $object->category, "square", $type);
                     $object->floor = $this->findParamOnString($object->title_obj, $object->category, "floor", $type);
-                    $object->build_floors = $this->findParamOnString($object->title_obj, $object->category, "build_floors", $type);
+                    $object->build_floors = $this->findParamOnString($object->title_obj, $object->category,
+                        "build_floors", $type);
 //                    $object->deal = $this->findParamOnString($object->title_obj, $object->category, "deal", $type);
                     $object->price = $this->findParamOnString($object->price, $object->category, "price", $type);
                     $object->build_type = $object->material_k;
                     $object->id = $parseobject->id;
-                    $object->url = "http://avito.ru".$object->url;
+                    $object->url = "http://avito.ru" . $object->url;
                     $object->area = $this->findParamOnString($object->address, $object->category, "area", $type);
                     $object->city = $this->findParamOnString($object->address, $object->category, "city", $type);
                     $address = explode(",", $object->address);
                     $object->address = '';
                     for ($i = 2; $i < count($address); $i++) {
-                        $object->address  .= trim($address[$i]) . " ";
+                        $object->address .= trim($address[$i]) . " ";
                     }
                     $result_ = $this->aobj_rep->addObj($object);
                     if ($result_ == "one") {
                         $result["have"]++;
-                        $result["object_h"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_h"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } elseif ($result_) {
                         $result["success"]++;
-                        $result["object_s"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_s"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } else {
                         $result["error"]++;
-                        $result["object_e"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_e"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     }
                     break;
                 case '2':
-                    if($object->distance == "В черте города") {
+                    if ($object->distance == "В черте города") {
                         $object->distance = 0;
                     }
                     $object->type = $this->findParamOnString($object->title_obj, $object->category, "type");
 //                    $object->distance = $object->distance;
-                    $object->home_square = $this->findParamOnString($object->title_obj, $object->category, "home_square");
-                    $object->earth_square = $this->findParamOnString($object->title_obj, $object->category, "earth_square");
+                    $object->home_square = $this->findParamOnString($object->title_obj, $object->category,
+                        "home_square");
+                    $object->earth_square = $this->findParamOnString($object->title_obj, $object->category,
+                        "earth_square");
                     $object->build_floors = $object->floor_in;
 //                    $object->deal = $this->findParamOnString($object->title_obj, $object->category, "deal");
                     $object->price = $this->findParamOnString($object->price, $object->category, "price");
                     $object->build_type = $object->material_h;
                     $object->id = $parseobject->id;
-                    $object->url = "http://avito.ru".$object->url;
+                    $object->url = "http://avito.ru" . $object->url;
                     $object->area = $this->findParamOnString($object->address, $object->category, "area");
                     $object->city = $this->findParamOnString($object->address, $object->category, "city");
                     $address = explode(",", $object->address);
                     $object->address = '';
                     for ($i = 2; $i < count($address); $i++) {
-                        $object->address  .= trim($address[$i]) . " ";
+                        $object->address .= trim($address[$i]) . " ";
                     }
                     $result_ = $this->aobj_rep->addObj($object);
                     if ($result_ == "one") {
                         $result["have"]++;
-                        $result["object_h"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_h"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } elseif ($result_) {
                         $result["success"]++;
-                        $result["object_s"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_s"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } else {
                         $result["error"]++;
-                        $result["object_e"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_e"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     }
                     break;
                 case '3':
@@ -317,29 +392,30 @@ class IndexController extends SiteController
                     $object->rooms = $this->findParamOnString($object->title_obj, $object->category, "room");
                     $object->square = $this->findParamOnString($object->title_obj, $object->category, "square");
                     $object->floor = $this->findParamOnString($object->title_obj, $object->category, "floor");
-                    $object->build_floors = $this->findParamOnString($object->title_obj, $object->category, "build_floors");
+                    $object->build_floors = $this->findParamOnString($object->title_obj, $object->category,
+                        "build_floors");
 //                    $object->deal = $this->findParamOnString($object->title_obj, $object->category, "deal");
                     $object->price = $this->findParamOnString($object->price, $object->category, "price");
                     $object->build_type = $object->material_c;
                     $object->id = $parseobject->id;
-                    $object->url = "http://avito.ru".$object->url;
+                    $object->url = "http://avito.ru" . $object->url;
                     $object->area = $this->findParamOnString($object->address, $object->category, "area");
                     $object->city = $this->findParamOnString($object->address, $object->category, "city");
                     $address = explode(",", $object->address);
                     $object->address = '';
                     for ($i = 2; $i < count($address); $i++) {
-                        $object->address  .= trim($address[$i]) . " ";
+                        $object->address .= trim($address[$i]) . " ";
                     }
                     $result_ = $this->aobj_rep->addObj($object);
                     if ($result_ == "one") {
                         $result["have"]++;
-                        $result["object_h"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_h"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } elseif ($result_) {
                         $result["success"]++;
-                        $result["object_s"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_s"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     } else {
                         $result["error"]++;
-                        $result["object_e"] .= "\\nlink = ". $object->url. " id = ". $object->id;
+                        $result["object_e"] .= "\\nlink = " . $object->url . " id = " . $object->id;
                     }
                     break;
                 default:
@@ -356,13 +432,34 @@ class IndexController extends SiteController
         Session::flash('parse_error', $result["error"]);
     }
 
-    public function findParamOnString($string, $category, $param, $type = 0) {
+    public function findParamOnString($string, $category, $param, $type = 0)
+    {
         $search_build_types = ["кирпичного", "панельного", "блочного", "монолитного", "деревянного"];
         $build_types = ["Кирпичный", "Панельный", "Блочный", "Монолитный", "Деревянный"];
         $search_types = ["дом", "дачу", "коттедж", "таунхаус"];
         $types = ["Дом", "Дача", "Коттедж", "Таунхаус"];
-        $search_build_types_2 = ["кирпич", "брус", "бревно", "газоблоки", "металл", "пеноблоки", "сэндвич-панели", "ж/б панели", "экспериментальные материалы"];
-        $build_types_2 = ["Кирпич", "Брус", "Бревно", "Металл", "Газоблоки", "Пеноблоки", "Сэндвич-панели", "Ж/б панели", "Экспериментальные материалы"];
+        $search_build_types_2 = [
+            "кирпич",
+            "брус",
+            "бревно",
+            "газоблоки",
+            "металл",
+            "пеноблоки",
+            "сэндвич-панели",
+            "ж/б панели",
+            "экспериментальные материалы"
+        ];
+        $build_types_2 = [
+            "Кирпич",
+            "Брус",
+            "Бревно",
+            "Металл",
+            "Газоблоки",
+            "Пеноблоки",
+            "Сэндвич-панели",
+            "Ж/б панели",
+            "Экспериментальные материалы"
+        ];
         switch ($category) {
             case '1':
                 switch ($param) {
@@ -374,7 +471,7 @@ class IndexController extends SiteController
                             return 1;
                         }
                         $room = explode(" ", $string);
-                        for($i = 1; $i < 11; $i++) {
+                        for ($i = 1; $i < 11; $i++) {
                             if ($room[0] == "$i-к") {
                                 return $i;
                             }
@@ -396,7 +493,7 @@ class IndexController extends SiteController
                         } else {
                             $floor = explode("/", $floor_[4]);
                         }
-                        return (int) $floor[0];
+                        return (int)$floor[0];
                         break;
                     case 'build_floors':
                         $floor_ = explode(" ", $string);
@@ -405,12 +502,12 @@ class IndexController extends SiteController
                         } else {
                             $floor = explode("/", $floor_[4]);
                         }
-                        return (int) $floor[1];
+                        return (int)$floor[1];
                         # code...
                         break;
                     case 'build_type':
                         for ($i = 0; $i < count($search_build_types); $i++) {
-                            if (preg_match("~".$search_build_types[$i]."~", $string[3 + $type])) {
+                            if (preg_match("~" . $search_build_types[$i] . "~", $string[3 + $type])) {
                                 return $build_types[$i];
                             }
                         }
@@ -444,7 +541,7 @@ class IndexController extends SiteController
                         break;
                     case 'type':
                         for ($i = 0; $i < count($types); $i++) {
-                            if (preg_match("~".$types[$i]."~", $string)) {
+                            if (preg_match("~" . $types[$i] . "~", $string)) {
                                 return $types[$i];
                             }
                         }
@@ -460,13 +557,13 @@ class IndexController extends SiteController
                         break;
                     case 'build_floors':
                         for ($i = 1; $i < 11; $i++) {
-                            if (preg_match("/.*(".$i.".*\-этажный|".$i."\-этажный).*/", $string[2])) {
+                            if (preg_match("/.*(" . $i . ".*\-этажный|" . $i . "\-этажный).*/", $string[2])) {
                                 return $i;
                             }
                         }
                         break;
                     case 'distance':
-                        if($string[5] == ",в черте города") {
+                        if ($string[5] == ",в черте города") {
                             return 0;
                         } else {
                             return $this->getAllInt($string[5]);
@@ -474,7 +571,7 @@ class IndexController extends SiteController
                         break;
                     case 'build_type':
                         for ($i = 0; $i < count($search_build_types_2); $i++) {
-                            if (preg_match("~".$search_build_types_2[$i]."~", $string[3])) {
+                            if (preg_match("~" . $search_build_types_2[$i] . "~", $string[3])) {
                                 return $build_types_2[$i];
                             }
                         }
@@ -504,7 +601,7 @@ class IndexController extends SiteController
                         break;
                     case 'room':
                         $room = explode(" ", $string);
-                        for($i = 1; $i < 11; $i++) {
+                        for ($i = 1; $i < 11; $i++) {
                             if ($room[4] == "$i-к,") {
                                 return $i;
                             }
@@ -518,18 +615,18 @@ class IndexController extends SiteController
                     case 'floor':
                         $floor_ = explode(" ", $string);
                         $floor = explode("/", $floor_[5]);
-                        return (int) $floor[0];
+                        return (int)$floor[0];
                         # code...
                         break;
                     case 'build_floors':
                         $floor_ = explode(" ", $string);
                         $floor = explode("/", $floor_[5]);
-                        return (int) $floor[1];
+                        return (int)$floor[1];
                         # code...
                         break;
                     case 'build_type':
                         for ($i = 0; $i < count($search_build_types); $i++) {
-                            if (preg_match("~".$search_build_types[$i]."~", $string)) {
+                            if (preg_match("~" . $search_build_types[$i] . "~", $string)) {
                                 return $build_types[$i];
                             }
                         }
@@ -563,15 +660,25 @@ class IndexController extends SiteController
         }
     }
 
-    public function parseDate($date){
+    public function parseDate($date)
+    {
         $monthsList = array(
-            "1"=>"января","2"=>"февраля","3"=>"марта",
-            "4"=>"апреля","5"=>"мая", "6"=>"июня",
-            "7"=>"июля","8"=>"августа","9"=>"сентября",
-            "10"=>"октября","11"=>"ноября","12"=>"декабря");
+            "1" => "января",
+            "2" => "февраля",
+            "3" => "марта",
+            "4" => "апреля",
+            "5" => "мая",
+            "6" => "июня",
+            "7" => "июля",
+            "8" => "августа",
+            "9" => "сентября",
+            "10" => "октября",
+            "11" => "ноября",
+            "12" => "декабря"
+        );
         preg_match("~\\d+\\:\\d+~", $date, $time);
         $time = explode(":", $time[0]);
-        if(preg_match("~сегодня~", $date)) {
+        if (preg_match("~сегодня~", $date)) {
             $obj_date = Carbon::today();
             $obj_date->hour($time[0]);
             $obj_date->minute($time[1]);
@@ -581,7 +688,7 @@ class IndexController extends SiteController
             $obj_date->minute($time[1]);
         } else {
             foreach ($monthsList as $key => $value) {
-                if (preg_match("~".$value."~", $date)) {
+                if (preg_match("~" . $value . "~", $date)) {
                     $mounth = $key;
                 }
             }
@@ -589,14 +696,17 @@ class IndexController extends SiteController
             $day = (int)$day[0];
             $now = Carbon::now();
             $year = $now->year;
-            $obj_date = Carbon::createFromFormat('Y-m-d H:i', "$year-$mounth-$day ".$time[0].":".$time[1]);
+            $obj_date = Carbon::createFromFormat('Y-m-d H:i', "$year-$mounth-$day " . $time[0] . ":" . $time[1]);
         }
         return $obj_date;
     }
 
-    public function getAllInt($string) {
+    public function getAllInt($string)
+    {
         $string = preg_replace("/[^0-9]/", '', $string);
-        if ($string == "") $string = 0;
+        if ($string == "") {
+            $string = 0;
+        }
         return $string;
     }
 }

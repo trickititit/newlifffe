@@ -1,5 +1,4 @@
-
-                    // Example using HTTP POST operation
+// Example using HTTP POST operation
 
 "use strict";
 
@@ -30,7 +29,7 @@ page.customHeaders = {
     "user-agent": useragent[Math.floor(Math.random() * useragent.length)]
 };
 
-//// Здесь я отключаю загрузку сторонних скриптов для ускореняи парсинга
+// Здесь я отключаю загрузку сторонних скриптов для ускореняи парсинга
 page.onResourceRequested = function (requestData, request) {
     if ((/http:\/\/.+?\.css$/gi).test(requestData['url'])) {
         request.abort();

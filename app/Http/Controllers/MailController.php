@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends SiteController
 {
     //
-    public function sendRequest(Request $request) {
+    public function sendRequest(Request $request)
+    {
         $data = $request->all();
         Mail::to($this->settings['mail'])->send(new RequestFromSite($data));
         return 'ok';
     }
 
-    public function sendCall(Request $request) {
+    public function sendCall(Request $request)
+    {
         $data = $request->all();
         Mail::to($this->settings['mail'])->send(new CallMail($data));
         return 'ok';

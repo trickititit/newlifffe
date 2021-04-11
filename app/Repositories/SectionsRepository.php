@@ -2,15 +2,13 @@
 
 namespace App\Repositories;
 
+use Gate;
 use App\Section;
 
-use Gate;
-
-class SectionsRepository extends Repository {
-
-    public function __construct(Section $section) {
+class SectionsRepository extends Repository
+{
+    public function __construct(Section $section)
+    {
         $this->model = $section;
     }
 }
-
-?>

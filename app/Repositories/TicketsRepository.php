@@ -13,12 +13,13 @@ use App\Ticket;
 class TicketsRepository extends Repository
 {
 
-    public function __construct(Ticket $ticket) {
+    public function __construct(Ticket $ticket)
+    {
         $this->model = $ticket;
     }
 
-    public function add($request, $user_id) {
-
+    public function add($request, $user_id)
+    {
         $data = $request->all();
         $this->model->create([
             'title' => $data['title'],
@@ -28,15 +29,14 @@ class TicketsRepository extends Repository
         ]);
 
         return ['status' => 'Тикет добавлен'];
-
     }
 
-    public function delete($ticket) {
-        if($ticket->delete()) {
+    public function delete($ticket)
+    {
+        if ($ticket->delete()) {
             return ['status' => 'Тикет удален'];
         } else {
             return ["error" => "Ошибка удаления тикета"];
         }
     }
-
 }

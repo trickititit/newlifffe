@@ -28,9 +28,9 @@
             <div class="text-block text-block-typical">
                 <p>{{ $ticket->text }}</p>
             </div>
-            {!! Form::open(["url" => route('ticket.destroy', ["id" => $ticket->id]), 'method' => "POST", "id" => "newDelete"]) !!}
-            {!! Form::button('Удалить', ['class' => 'btn btn-danger news-delete','type'=>'submit']) !!}
+            {!! Form::open(["url" => route('ticket.destroy', $ticket->id), "id" => "newDelete"]) !!}
             {!! Form::hidden('_method', "DELETE") !!}
+            {!! Form::button('Удалить', ['class' => 'btn btn-danger news-delete','type'=>'submit']) !!}
             {!! Form::close() !!}
         </div>
     </section>

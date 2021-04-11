@@ -13,12 +13,13 @@ use App\Anew;
 class NewsRepository extends Repository
 {
 
-    public function __construct(Anew $new) {
+    public function __construct(Anew $new)
+    {
         $this->model = $new;
     }
 
-
-    public function addNew($request) {
+    public function addNew($request)
+    {
 //		if (\Gate::denies('create',$this->model)) {
 ////            abort(403);
 //        }
@@ -32,8 +33,9 @@ class NewsRepository extends Repository
 
     }
 
-    public function deleteNew($new) {
-        if($new->delete()) {
+    public function deleteNew($new)
+    {
+        if ($new->delete()) {
             return ['status' => 'Новость удалена'];
         } else {
             return ["error" => "Ошибка удаления новости"];

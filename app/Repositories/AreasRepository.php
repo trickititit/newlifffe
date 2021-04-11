@@ -2,15 +2,13 @@
 
 namespace App\Repositories;
 
+use Gate;
 use App\Area;
 
-use Gate;
-
-class AreasRepository extends Repository {
-
-    public function __construct(Area $area) {
+class AreasRepository extends Repository
+{
+    public function __construct(Area $area)
+    {
         $this->model = $area;
     }
 }
-
-?>

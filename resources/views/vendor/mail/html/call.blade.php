@@ -27,7 +27,7 @@
     <tr>
         <td align="center">
             <table class="content" width="100%" cellpadding="0" cellspacing="0">
-            {{ $header or '' }}
+            {{ $header ?? '' }}
 
             <!-- Email Body -->
                 <tr>
@@ -39,14 +39,14 @@
                                     Письмо отправлено с сайта Обменжилья.рф <br>
                                     Прошу мне позвонить. <br>
                                     Меня зовут {{$name}}, мой телефон {{$phone}} и email {{$mail}} <br>
-                                    {{ $subcopy or '' }}
+                                    {{ $subcopy ?? '' }}
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
 
-                {{ $footer or '' }}
+                {{ $footer ?? '' }}
             </table>
         </td>
     </tr>

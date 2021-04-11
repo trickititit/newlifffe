@@ -2,20 +2,29 @@
     <header class="box-typical-header">
         <div class="tbl-row">
             <div class="tbl-cell tbl-cell-title">
-                <h3 id="h3-create-obj">Трансфер объекта</h3> <button id="upload-img" class="btn btn-primary clearfix" data-toggle="modal" data-target="#myModal">
-                    Загрузить изображения
-                </button>
+                <h3 id="h3-create-obj">Трансфер объекта</h3>
             </div>
         </div>
     </header>
+
     <div class="box-typical-body">
+        <h3>Изображения</h3>
+        {!! Form::open(["url" => route("adminObjUplImg"), "class" => "dropzone", 'method' => "POST", "id" => "my-dropzone"]) !!}
+        {!! Form::hidden('obj_id', isset($object->id)? $object->id: old("obj-id", $obj_id), ["id" => "obj-id"]) !!}
+        {!! Form::hidden('tmp_img', 1, ["id" => "tmp-img"]) !!}
+        {!! Form::close() !!}
+        <br>
+        <br>
         {!! Form::open(["url" => route('aobject.store'), "class" => "form-wizard", 'method' => "POST", "id" => "objCreate"]) !!}
         <div>
             <section>
                 {!! $obj_param !!}
-                <input id="obj_type" type="hidden" name="obj_type" value="{{ isset($object->category) ? $object->category  : (isset($category) ? $category : old('obj_type'))}}">
-                <input type="hidden" name="obj_form_1" value="{{isset($object->category) ? (($object->category == 1) ? $object->type : ""): (isset($type) ? $type : old('obj_form_1'))}}">
-                <input type="hidden" name="obj_form_2" value="{{isset($object->category) ? (($object->category == 2) ? $object->type : ""): (isset($type) ? $type : old('obj_form_2'))}}">
+                <input id="obj_type" type="hidden" name="obj_type"
+                       value="{{ isset($object->category) ? $object->category  : (isset($category) ? $category : old('obj_type'))}}">
+                <input type="hidden" name="obj_form_1"
+                       value="{{isset($object->category) ? (($object->category == 1) ? $object->type : ""): (isset($type) ? $type : old('obj_form_1'))}}">
+                <input type="hidden" name="obj_form_2"
+                       value="{{isset($object->category) ? (($object->category == 2) ? $object->type : ""): (isset($type) ? $type : old('obj_form_2'))}}">
                 @if($object->category == 3)
                     <div id="obj_form_3" class="form-group row">
                         <div id="obj_form_3">
@@ -34,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-		<div id="obj_city" class="form-group row">
+                <div id="obj_city" class="form-group row">
                     <label for="obj_type" class="col-sm-2 form-control-label">Город</label>
                     <div class="col-sm-10 col-md-4">
                         <p class="form-control-static">{!! Form::select('obj_city', $inputs["obj_city"],  $object->city, ["class" => "form-control"]) !!}</p>
@@ -69,16 +78,19 @@
                             <label for="spec_offer">Специальное предложение</label>
                         </div>
                     </div>
-                    <div class="form-group clearfix" id="spec_offer_input" {{ isset($object->spec_offer) ? "" : "style=display:none;"  }}>
+                    <div class="form-group clearfix"
+                         id="spec_offer_input" {{ isset($object->spec_offer) ? "" : "style=display:none;"  }}>
                         <div class="col-md-4">
                             <fieldset class="form-group">
-                                <label class="form-label semibold" for="client_family">Поле Специального предложения 1</label>
+                                <label class="form-label semibold" for="client_family">Поле Специального предложения
+                                    1</label>
                                 {!! Form::text('spec_offer_span_1', isset($object->spec_offer_span_1)? $object->spec_offer_span_1 : old("spec_offer_span_1"), ["id" => "spec_offer_span_1" ,"class" => "form-control"]) !!}
                             </fieldset>
                         </div>
                         <div class="col-md-4">
                             <fieldset class="form-group">
-                                <label class="form-label semibold" for="client_father_name">Поле Специального предложения 2</label>
+                                <label class="form-label semibold" for="client_father_name">Поле Специального
+                                    предложения 2</label>
                                 {!! Form::text('spec_offer_span_2', isset($object->spec_offer_span_2)? $object->spec_offer_span_2 : old("spec_offer_span_2"), ["id" => "spec_offer_span_2" ,"class" => "form-control"]) !!}
                             </fieldset>
                         </div>
@@ -93,9 +105,11 @@
                             <div id="adr-search" class="form-search">
                                 <div class="control-group">
                                     <div class="input-group">
-                                        <input name="search-query" type="text" class="form-control" id="search-query" placeholder="Что искать...">
+                                        <input name="search-query" type="text" class="form-control" id="search-query"
+                                               placeholder="Что искать...">
                                         <span class="input-group-btn">
-                                                            <button id="search-map" class="btn btn-secondary" type="submit">Найти</button>
+                                                            <button id="search-map" class="btn btn-secondary"
+                                                                    type="submit">Найти</button>
                                                           </span>
                                     </div>
                                     <span class="help-inline invisible">Пожалуйста исправьте ошибку в этом поле</span>
@@ -110,20 +124,24 @@
                     <div id="address form-group" class="form-group row">
                         <label for="obj_address" class="col-sm-2 form-control-label">Адрес</label>
                         <div class="col-sm-10">
-                            <p class="form-control-static">{!! Form::text('obj_address', isset($object->address)? $object->address : old("obj_address"), ['id'=>'obj_address', "class" => "form-control", 'aria-describedby'=>'adrHelp', "required" => ""]) !!}<small id="adrHelp" class="form-text text-muted">Можно поменять сформировавшийся адрес.</small></p>
+                            <p class="form-control-static">{!! Form::text('obj_address', isset($object->address)? $object->address : old("obj_address"), ['id'=>'obj_address', "class" => "form-control", 'aria-describedby'=>'adrHelp', "required" => ""]) !!}
+                                <small id="adrHelp" class="form-text text-muted">Можно поменять сформировавшийся
+                                    адрес.</small></p>
                         </div>
                     </div>
                 </div>
             </section>
             <section>
-                <div id="cat-1" {{isset($object->category)? (($object->category == 2) ? "style=display:none;" : "") : ($category == 2) ? "style=display:none;": ""}}>
+                <div id="cat-1" {{isset($object->category) ? (($object->category == 2) ? "style=display:none;" : "") : (($category == 2) ? "style=display:none;": "")}}>
                     <div id="room" class="form-group row">
                         <label for="obj_room" class="col-sm-2 form-control-label">Количество комнат</label>
                         <div class="col-sm-10">
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_room"] as $value => $input)
                                     <label class="btn {{isset($object->rooms)? (($object->rooms == $value) ?  "active" : "") : ""}}">
-                                        <input type="radio" {{isset($object->rooms)? (($object->rooms == $value) ?  "checked" : "") : ""}} name="obj_room" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input type="radio"
+                                               {{isset($object->rooms)? (($object->rooms == $value) ?  "checked" : "") : ""}} name="obj_room"
+                                               value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -135,7 +153,9 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_build_type_1"] as $value => $input)
                                     <label class="btn {{isset($object->build_type)? (($object->build_type == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->build_type)? (($object->build_type == $value) ?  "checked" : "") : ""}} type="radio" name="obj_build_type_1" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->build_type)? (($object->build_type == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_build_type_1" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -147,7 +167,9 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_floor"] as $value => $input)
                                     <label class="btn {{isset($object->floor)? (($object->floor == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->floor)? (($object->floor == $value) ?  "checked" : "") : ""}} type="radio" name="obj_floor" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->floor)? (($object->floor == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_floor" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -159,7 +181,9 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_home_floors_1"] as $value => $input)
                                     <label class="btn {{isset($object->build_floors)? (($object->build_floors == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->build_floors)? (($object->build_floors == $value) ?  "checked" : "") : ""}} type="radio" name="obj_home_floors_1" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->build_floors)? (($object->build_floors == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_home_floors_1" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -181,7 +205,7 @@
                                     <div class="btn-group" data-toggle="buttons" id="square_general_radio">
                                         @foreach($inputs["obj_general_square"] as $value => $input)
                                             <label class="btn">
-                                                <input type="radio" value="{{$value}}" id="option{{$value}}" > {{$input}}
+                                                <input type="radio" value="{{$value}}" id="option{{$value}}"> {{$input}}
                                             </label>
                                         @endforeach
                                     </div>
@@ -203,7 +227,7 @@
                                     <div class="btn-group" data-toggle="buttons" id="square_kitchen_radio">
                                         @foreach($inputs["obj_square_kitchen"] as $value => $input)
                                             <label class="btn">
-                                                <input type="radio" value="{{$value}}" id="option{{$value}}" > {{$input}}
+                                                <input type="radio" value="{{$value}}" id="option{{$value}}"> {{$input}}
                                             </label>
                                         @endforeach
                                     </div>
@@ -225,7 +249,7 @@
                                     <div class="btn-group" data-toggle="buttons" id="square_life_radio">
                                         @foreach($inputs["obj_square_life"] as $value => $input)
                                             <label class="btn">
-                                                <input type="radio" value="{{$value}}" id="option{{$value}}" > {{$input}}
+                                                <input type="radio" value="{{$value}}" id="option{{$value}}"> {{$input}}
                                             </label>
                                         @endforeach
                                     </div>
@@ -234,14 +258,16 @@
                         </div>
                     </div>
                 </div>
-                <div id="cat-2" {{isset($object->category)? (($object->category != 2) ? "style=display:none;" : "") : ($category != 2) ? "style=display:none;": ""}}>
+                <div id="cat-2" {{isset($object->category) ? (($object->category != 2) ? "style=display:none;" : "") : (($category != 2) ? "style=display:none;": "")}}>
                     <div id="home_floors_2" class="form-group row">
                         <label for="obj_home_floors_2" class="col-sm-2 form-control-label">Этажей в доме</label>
                         <div class="col-sm-10">
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_home_floors_2"] as $value => $input)
                                     <label class="btn {{isset($object->build_floors)? (($object->build_floors == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->build_floors)? (($object->build_floors == $value) ?  "checked" : "") : ""}} type="radio" name="obj_home_floors_2" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->build_floors)? (($object->build_floors == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_home_floors_2" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -253,7 +279,9 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_build_type_2"] as $value => $input)
                                     <label class="btn {{isset($object->build_type)? (($object->build_type == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->build_type)? (($object->build_type == $value) ?  "checked" : "") : ""}} type="radio" name="obj_build_type_2" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->build_type)? (($object->build_type == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_build_type_2" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -265,7 +293,9 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($inputs["obj_distance"] as $value => $input)
                                     <label class="btn {{isset($object->distance)? (($object->distance == $value) ?  "active" : "") : ""}}">
-                                        <input {{isset($object->distance)? (($object->distance == $value) ?  "checked" : "") : ""}} type="radio" name="obj_distance" value="{{$value}}" id="option{{$value}}" autocomplete="off"> {{$input}}
+                                        <input {{isset($object->distance)? (($object->distance == $value) ?  "checked" : "") : ""}} type="radio"
+                                               name="obj_distance" value="{{$value}}" id="option{{$value}}"
+                                               autocomplete="off"> {{$input}}
                                     </label>
                                 @endforeach
                             </div>
@@ -294,7 +324,7 @@
                         </div>
                     </div>
                 </div>
-                <div >
+                <div>
                     <h4 class="m-t-md">Удобства</h4>
                     <div>
                         <div id="comforts-no-border" class="no-border">
@@ -372,7 +402,8 @@
                         <div class="card">
                             <div class="card-header" role="tab" id="headingOne">
                                 <h5 style="margin-bottom: 0;">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                                       aria-expanded="true" aria-controls="collapseOne">
                                         Данные
                                     </a>
                                 </h5>
@@ -394,7 +425,12 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="client_phone" class="form-label semibold">Телефон</label>
+                                            <label for="client_phone" class="form-label semibold">
+                                                Телефон
+                                                @if($object->client_phone_is_anonymous == 1)
+                                                    <span class="button-text text-danger">(Номер защищен)</span>
+                                                @endif
+                                            </label>
                                             <div class="input-group">
                                                 <div class="input-group-addon">
                                                     <span>+7</span>
@@ -418,13 +454,15 @@
                                     </div>
                                     <div class="col-md-4">
                                         <fieldset class="form-group">
-                                            <label class="form-label semibold" for="client_pasport_who_take">Кем выдан</label>
+                                            <label class="form-label semibold" for="client_pasport_who_take">Кем
+                                                выдан</label>
                                             {!! Form::text('client_pasport_who_take', isset($object->client->pasport_who_take)? $object->client->pasport_who_take : old("client_pasport_who_take"), ["id" => "client_pasport_who_take" ,"class" => "form-control"]) !!}
                                         </fieldset>
                                     </div>
                                     <div class="col-md-4">
                                         <fieldset class="form-group">
-                                            <label class="form-label semibold" for="client_pasport_date">Когда выдан</label>
+                                            <label class="form-label semibold" for="client_pasport_date">Когда
+                                                выдан</label>
                                             {!! Form::text('client_pasport_date', isset($object->client->pasport_date)? $object->client->pasport_date : old("client_pasport_date"), ["id" => "client_pasport_date" ,"class" => "form-control date-mask-input"]) !!}
                                         </fieldset>
                                     </div>
@@ -452,23 +490,3 @@
         {!! Form::close() !!}
     </div><!--.box-typical-body-->
 </section>
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Загрузка изображений</h4>
-            </div>
-            <div class="modal-body">
-                {!! Form::open(["url" => route("adminObjUplImg"), "class" => "dropzone", 'method' => "POST", "id" => "my-dropzone"]) !!}
-                {!! Form::hidden('obj_id', isset($object->id)? $object->id: old("obj-id", $obj_id), ["id" => "obj-id"]) !!}
-                {!! Form::hidden('tmp_img', 1, ["id" => "tmp-img"]) !!}
-                {!! Form::close() !!}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-            </div>
-        </div>
-    </div>
-</div>

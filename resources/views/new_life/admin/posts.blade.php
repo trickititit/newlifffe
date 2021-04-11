@@ -10,9 +10,9 @@
                     <a href="{{route('post.edit',['post'=>$post->alias])}}">
                         <button class="btn btn-default" style="float: right">Редактировать</button>
                     </a>
-                    {!! Form::open(["url" => route('post.destroy', ["post" => $post->alias]), 'method' => "POST", "id" => "postDelete"]) !!}
-                    {!! Form::button('Удалить', ['class' => 'btn btn-danger','type'=>'submit', 'style' => 'float:right; margin-right: 10px;']) !!}
+                    {!! Form::open(["url" => route('post.destroy', $post->alias), "id" => "postDelete"]) !!}
                     {!! Form::hidden('_method', "DELETE") !!}
+                    {!! Form::button('Удалить', ['class' => 'btn btn-danger','type'=>'submit', 'style' => 'float:right; margin-right: 10px;']) !!}
                     {!! Form::close() !!}
                 </div>
             </div>

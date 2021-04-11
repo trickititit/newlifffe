@@ -25,9 +25,9 @@
             <p>{{ $new->text }}</p>
         </div>
     </article><!--.profile-info-item-->
-    {!! Form::open(["url" => route('news.destroy', ["id" => $new->id]), 'method' => "POST", "id" => "newDelete"]) !!}
-    {!! Form::button('Удалить', ['class' => 'btn btn-danger news-delete','type'=>'submit']) !!}
+    {!! Form::open(["url" => route('news.destroy', $new->id), "id" => "newDelete"]) !!}
     {!! Form::hidden('_method', "DELETE") !!}
+    {!! Form::button('Удалить', ['class' => 'btn btn-danger news-delete','type'=>'submit']) !!}
     {!! Form::close() !!}
 </section>
 @endforeach
